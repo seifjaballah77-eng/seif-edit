@@ -17,9 +17,9 @@ function projectPayload(){
 }
 let projectName='مشروع جديد';
 function currentProjectName(){return projectName}
-function scheduleSave(){if(isRestoring)return; if(!currentProjectId)currentProjectId='project-'+Date.now();$('saveState').textContent='● جارٍ الحفظ...';clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveProject(false),700)}
+function scheduleSave(){if(isRestoring)return; if(!currentProjectId){currentProjectId='project-'+Date.now();projectName='مشروع '+new Date().toLocaleString('ar-TN')}$('saveState').textContent='● جارٍ الحفظ...';clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveProject(false),700)}
 async function saveProject(manual=true){
- clearTimeout(saveTimer);if(!currentProjectId)currentProjectId='project-'+Date.now();
+ clearTimeout(saveTimer);if(!currentProjectId){currentProjectId='project-'+Date.now();projectName='مشروع '+new Date().toLocaleString('ar-TN')}
  try{const p=projectPayload();await dbAction('readwrite','put',p);$('saveState').textContent='● محفوظ تلقائيًا';if(manual)toast('تم حفظ المشروع بنجاح');renderProjectHistory();return true}
  catch(err){$('saveState').textContent='● تعذّر الحفظ';if(manual)toast('تعذّر الحفظ المحلي: '+(err.message||'خطأ في التخزين'));return false}
 }
@@ -95,16 +95,16 @@ $('muteBtn').onclick=()=>{video.muted=!video.muted;$('muteBtn').querySelector('s
 $('fitBtn').onclick=()=>{video.style.objectFit=video.style.objectFit==='cover'?'contain':'cover';img.style.objectFit=img.style.objectFit==='cover'?'contain':'cover'};
 $('fullscreenBtn').onclick=()=>{$('previewStage').requestFullscreen?.()};
 $('zoomIn').onclick=()=>{state.zoom=Math.min(4,state.zoom+.2);renderClips()};$('zoomOut').onclick=()=>{state.zoom=Math.max(.4,state.zoom-.2);renderClips()};
-$('addTrack').onclick=()=>{state.extraTracks++;const row=document.createElement('div');row.className='track';row.innerHTML='<div class="track-label">＋ <span>مسار '+state.extraTracks+'</span></div><div class="track-lane" data-track="extra'+state.extraTracks+'"></div>';$('tracks').append(row);toast('تمت إضافة مسار جديد')};
+$('addTrack').onclick=()=>{state.extraTracks++;const row=document.createElement('div');row.className='track';row.innerHTML='<div class="track-label">＋ <span>مسار '+state.extraTracks+'</span></div><div class="track-lane" data-track="extra'+state.extraTracks+'"></div>';$('tracks').append(row);scheduleSave();toast('تمت إضافة مسار جديد')};
 $('addTextBtn').onclick=()=>toast('أداة النصوص المتحركة ضمن المرحلة التالية');
 $('exportBtn').onclick=()=>toast('التصدير النهائي قيد البناء — لن نعرض تصديرًا وهميًا');
 $('undoBtn').onclick=()=>{if(!state.history.length){toast('لا توجد خطوات للتراجع');return}state.future.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.history.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected);};
 $('redoBtn').onclick=()=>{if(!state.future.length){toast('لا توجد خطوات للإعادة');return}state.history.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.future.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected)};
 $('saveProjectBtn').onclick=()=>saveProject(true);$('newProjectBtn').onclick=startNewProject;
 $('templateSearch').oninput=renderTemplateLibrary;$('templateType').onchange=renderTemplateLibrary;
-document.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));b.classList.add('active');const labels={history:['سجل الأعمال','مشاريعك السابقة والحفظ التلقائي'],media:['الوسائط','أضف الفيديوهات والصور إلى مشروعك'],audio:['الصوت','إدارة الموسيقى والتعليق الصوتي'],text:['النصوص','عناوين وكتابة متحركة'],effects:['المؤثرات','مؤثرات بصرية وانتقالات حركية'],filters:['الفلاتر','أنماط لونية جاهزة'],transitions:['الانتقالات','انتقالات بين المشاهد'],adjust:['الألوان','تصحيح وتدرج لوني'],layers:['الطبقات','إدارة عناصر المشروع']};const x=b.dataset.tool==='templates'?['القوالب','مكتبة قوالب الفيديو والصور']:labels[b.dataset.tool];$('assetTitle').textContent=x[0];$('assetSubtitle').textContent=x[1];$('assetPanel').classList.toggle('templates-mode',b.dataset.tool==='templates');if(b.dataset.tool==='templates')renderTemplateLibrary();else if(b.dataset.tool==='history')renderProjectHistory();else if(b.dataset.tool!=='media')toast('قسم '+x[0]+' سيُفعّل بأدواته في التحديثات القادمة')});
-$('aspectSelect').onchange=e=>{const [w,h]=e.target.value.split(':').map(Number);$('previewStage').style.aspectRatio=w+'/'+h;toast('تم تغيير نسبة المعاينة')};
-$('fpsSelect').onchange=()=>toast('تم تحديث إعداد معدل الإطارات للمشروع');
+document.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));b.classList.add('active');const labels={history:['سجل الأعمال','مشاريعك السابقة والحفظ التلقائي'],media:['الوسائط','أضف الفيديوهات والصور إلى مشروعك'],audio:['الصوت','إدارة الموسيقى والتعليق الصوتي'],text:['النصوص','عناوين وكتابة متحركة'],effects:['المؤثرات','مؤثرات بصرية وانتقالات حركية'],filters:['الفلاتر','أنماط لونية جاهزة'],transitions:['الانتقالات','انتقالات بين المشاهد'],adjust:['الألوان','تصحيح وتدرج لوني'],layers:['الطبقات','إدارة عناصر المشروع']};const x=b.dataset.tool==='templates'?['القوالب','مكتبة قوالب الفيديو والصور']:labels[b.dataset.tool];$('assetTitle').textContent=x[0];$('assetSubtitle').textContent=x[1];$('assetPanel').classList.toggle('templates-mode',b.dataset.tool==='templates');$('assetPanel').classList.toggle('history-mode',b.dataset.tool==='history');if(b.dataset.tool==='templates')renderTemplateLibrary();else if(b.dataset.tool==='history')renderProjectHistory();else if(b.dataset.tool!=='media')toast('قسم '+x[0]+' سيُفعّل بأدواته في التحديثات القادمة')});
+$('aspectSelect').onchange=e=>{const [w,h]=e.target.value.split(':').map(Number);$('previewStage').style.aspectRatio=w+'/'+h;scheduleSave();toast('تم تغيير نسبة المعاينة')};
+$('fpsSelect').onchange=()=>{scheduleSave();toast('تم تحديث إعداد معدل الإطارات للمشروع')};
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 updateSave();renderProjectHistory();
 })();
