@@ -2,6 +2,44 @@
 const $=id=>document.getElementById(id);
 const state={assets:[],clips:[],selected:null,zoom:1,playing:false,history:[],future:[],extraTracks:0};
 const video=$('previewVideo'),img=$('previewImage');
+const templateData=[
+{n:'زفاف ذهبي فاخر',c:'الأعراس',t:'video',d:'سينمائي • 16:9',q:'wedding'},
+{n:'قصة حب العروسين',c:'الأعراس',t:'video',d:'رومانسي • 16:9',q:'wedding'},
+{n:'دخول العروس',c:'الأعراس',t:'video',d:'درامي • 16:9',q:'wedding'},
+{n:'دعوة زفاف أنيقة',c:'الأعراس',t:'video',d:'دعوة • 9:16',q:'wedding'},
+{n:'فيلم يوم الزفاف',c:'الأعراس',t:'video',d:'ذكريات • 16:9',q:'wedding'},
+{n:'زفاف أبيض ووردي',c:'الأعراس',t:'photo',d:'ألبوم صور • 1:1',q:'wedding'},
+{n:'ألبوم العروسين',c:'الأعراس',t:'photo',d:'كولاج • 4:5',q:'wedding'},
+{n:'لحظات كتب الكتاب',c:'الأعراس',t:'video',d:'هادئ • 9:16',q:'wedding'},
+{n:'ذكريات الخطوبة',c:'الخطوبة والحب',t:'video',d:'رومانسي • 9:16',q:'engagement'},
+{n:'طلب الزواج',c:'الخطوبة والحب',t:'photo',d:'صور • 1:1',q:'wedding'},
+{n:'ذكرى الزواج',c:'الخطوبة والحب',t:'video',d:'عرض شرائح • 16:9',q:'anniversary'},
+{n:'قصة حب سينمائية',c:'الخطوبة والحب',t:'video',d:'فيلم • 16:9',q:'wedding'},
+{n:'عيد ميلاد مبهج',c:'أعياد الميلاد',t:'video',d:'احتفالي • 9:16',q:'birthday'},
+{n:'ألبوم عيد الميلاد',c:'أعياد الميلاد',t:'photo',d:'صور • 1:1',q:'birthday'},
+{n:'تخرج ذهبي',c:'التخرج',t:'video',d:'احتفالي • 16:9',q:'graduation'},
+{n:'ذكريات العائلة',c:'العائلة',t:'photo',d:'ألبوم • 4:5',q:'family'},
+{n:'رحلة ومغامرة',c:'السفر',t:'video',d:'سينمائي • 16:9',q:'travel'},
+{n:'ملخص رحلة',c:'السفر',t:'photo',d:'كولاج • 1:1',q:'travel'},
+{n:'إعلان منتج فاخر',c:'إعلانات',t:'video',d:'ترويجي • 9:16',q:'promo'},
+{n:'عرض متجر',c:'إعلانات',t:'photo',d:'منتج • 1:1',q:'promo'},
+{n:'Gaming Highlights',c:'الألعاب',t:'video',d:'حماسي • 16:9',q:'gaming'},
+{n:'أنمي AMV',c:'الألعاب',t:'video',d:'إيقاعي • 9:16',q:'gaming'},
+{n:'Lyrics متحرك',c:'الموسيقى',t:'video',d:'نصوص • 9:16',q:'music'},
+{n:'ذكريات الأطفال',c:'العائلة',t:'photo',d:'ألبوم • 4:5',q:'family'}
+];
+let activeTemplateCat='الكل';
+function renderTemplateLibrary(){
+ const cats=['الكل','الأعراس','الخطوبة والحب','أعياد الميلاد','التخرج','العائلة','السفر','إعلانات','الألعاب','الموسيقى'];
+ $('templateCats').innerHTML='';
+ cats.forEach(c=>{const b=document.createElement('button');b.className='template-cat'+(activeTemplateCat===c?' active':'');b.textContent=c;b.onclick=()=>{activeTemplateCat=c;renderTemplateLibrary()};$('templateCats').append(b)});
+ const term=($('templateSearch').value||'').trim().toLowerCase(),kind=$('templateType').value;
+ const items=templateData.filter(x=>(activeTemplateCat==='الكل'||x.c===activeTemplateCat)&&(kind==='all'||x.t===kind)&&(!term||(x.n+' '+x.c+' '+x.d).toLowerCase().includes(term)));
+ $('templateGrid').innerHTML='';
+ items.forEach(x=>{const card=document.createElement('article');card.className='template-card';const art=document.createElement('div');art.className='template-art '+(x.t==='photo'?'photo':'');art.textContent=x.n;const info=document.createElement('div');info.className='template-info';const title=document.createElement('b');title.textContent=x.n;const meta=document.createElement('small');meta.textContent=(x.t==='photo'?'قالب صور':'قالب فيديو')+' • '+x.d;const a=document.createElement('a');a.className='template-open';a.target='_blank';a.rel='noopener';a.href='https://www.flexclip.com/template/?search='+encodeURIComponent(x.q);a.textContent='ابحث عن أمثلة مشابهة في FlexClip ↗';info.append(title,meta,a);card.append(art,info);$('templateGrid').append(card)});
+ if(!items.length)$('templateGrid').textContent='لا توجد نتائج مطابقة.';
+}
+
 function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2300)}
 function time(s){if(!Number.isFinite(s))s=0;const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=Math.floor(s%60),ms=Math.floor(s%1*1000);return [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':')+'.'+String(ms).padStart(3,'0')}
 function snapshot(){state.history.push(JSON.stringify({clips:state.clips,selected:state.selected}));if(state.history.length>40)state.history.shift();state.future=[]}
@@ -27,7 +65,8 @@ $('addTextBtn').onclick=()=>toast('أداة النصوص المتحركة ضمن
 $('exportBtn').onclick=()=>toast('التصدير النهائي قيد البناء — لن نعرض تصديرًا وهميًا');
 $('undoBtn').onclick=()=>{if(!state.history.length){toast('لا توجد خطوات للتراجع');return}state.future.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.history.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected);};
 $('redoBtn').onclick=()=>{if(!state.future.length){toast('لا توجد خطوات للإعادة');return}state.history.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.future.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected)};
-document.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));b.classList.add('active');const labels={media:['الوسائط','أضف الفيديوهات والصور إلى مشروعك'],audio:['الصوت','إدارة الموسيقى والتعليق الصوتي'],text:['النصوص','عناوين وكتابة متحركة'],effects:['المؤثرات','مؤثرات بصرية وانتقالات حركية'],filters:['الفلاتر','أنماط لونية جاهزة'],transitions:['الانتقالات','انتقالات بين المشاهد'],adjust:['الألوان','تصحيح وتدرج لوني'],layers:['الطبقات','إدارة عناصر المشروع']};const x=labels[b.dataset.tool];$('assetTitle').textContent=x[0];$('assetSubtitle').textContent=x[1];if(b.dataset.tool!=='media')toast('قسم '+x[0]+' سيُفعّل بأدواته في التحديثات القادمة')});
+$('templateSearch').oninput=renderTemplateLibrary;$('templateType').onchange=renderTemplateLibrary;
+document.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));b.classList.add('active');const labels={media:['الوسائط','أضف الفيديوهات والصور إلى مشروعك'],audio:['الصوت','إدارة الموسيقى والتعليق الصوتي'],text:['النصوص','عناوين وكتابة متحركة'],effects:['المؤثرات','مؤثرات بصرية وانتقالات حركية'],filters:['الفلاتر','أنماط لونية جاهزة'],transitions:['الانتقالات','انتقالات بين المشاهد'],adjust:['الألوان','تصحيح وتدرج لوني'],layers:['الطبقات','إدارة عناصر المشروع']};const x=b.dataset.tool==='templates'?['القوالب','مكتبة قوالب الفيديو والصور']:labels[b.dataset.tool];$('assetTitle').textContent=x[0];$('assetSubtitle').textContent=x[1];$('assetPanel').classList.toggle('templates-mode',b.dataset.tool==='templates');if(b.dataset.tool==='templates')renderTemplateLibrary();else if(b.dataset.tool!=='media')toast('قسم '+x[0]+' سيُفعّل بأدواته في التحديثات القادمة')});
 $('aspectSelect').onchange=e=>{const [w,h]=e.target.value.split(':').map(Number);$('previewStage').style.aspectRatio=w+'/'+h;toast('تم تغيير نسبة المعاينة')};
 $('fpsSelect').onchange=()=>toast('تم تحديث إعداد معدل الإطارات للمشروع');
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
