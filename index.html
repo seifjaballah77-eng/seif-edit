@@ -16,6 +16,7 @@
       <span class="save-state" id="saveState">● مشروع جديد</span>
       <button class="btn ghost" id="undoBtn" title="تراجع">↶</button>
       <button class="btn ghost" id="redoBtn" title="إعادة">↷</button>
+      <button class="btn ghost save-project-btn" id="saveProjectBtn" title="حفظ المشروع (Ctrl+S)">حفظ Ctrl+S</button>
       <button class="btn gold" id="exportBtn">تصدير الفيديو</button>
     </div>
   </header>
@@ -24,6 +25,7 @@
     <aside class="tools-panel">
       <div class="panel-heading"><span>مساحة الإبداع</span><span class="tiny-dot"></span></div>
       <button class="tool active" data-tool="media"><i>▧</i><span>الوسائط</span></button>
+      <button class="tool" data-tool="history"><i>◷</i><span>سجل الأعمال</span></button>
       <button class="tool" data-tool="templates"><i>▦</i><span>القوالب</span></button>
       <button class="tool" data-tool="audio"><i>♫</i><span>الصوت</span></button>
       <button class="tool" data-tool="text"><i>T</i><span>النصوص</span></button>
@@ -47,6 +49,7 @@
         <a class="flexclip-link" href="https://www.flexclip.com/templates/" target="_blank" rel="noopener">استكشف مكتبة FlexClip الرسمية ↗</a>
         <p class="template-note">قوالبنا الأصلية قابلة للتطوير داخل المحرر. روابط FlexClip تفتح مكتبتهم الرسمية ولا تنسخ ملفاتهم.</p>
       </section>
+    <section id="projectHistory" class="project-history" hidden><div class="history-head"><b>سجل الأعمال السابقة</b><button id="newProjectBtn" class="mini-btn">＋ مشروع جديد</button></div><p class="history-help">مشاريعك محفوظة على هذا المتصفح مع ملفاتها المستوردة.</p><div id="projectList" class="project-list"></div></section>
     </section>
 
     <section class="editor">
