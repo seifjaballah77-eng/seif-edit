@@ -24,6 +24,7 @@
     <aside class="tools-panel">
       <div class="panel-heading"><span>مساحة الإبداع</span><span class="tiny-dot"></span></div>
       <button class="tool active" data-tool="media"><i>▧</i><span>الوسائط</span></button>
+      <button class="tool" data-tool="templates"><i>▦</i><span>القوالب</span></button>
       <button class="tool" data-tool="audio"><i>♫</i><span>الصوت</span></button>
       <button class="tool" data-tool="text"><i>T</i><span>النصوص</span></button>
       <button class="tool" data-tool="effects"><i>✧</i><span>المؤثرات</span></button>
@@ -39,6 +40,13 @@
       <label class="import-drop" for="mediaInput"><span class="upload-icon">＋</span><b>استيراد الوسائط</b><small>فيديو • صور • صوت</small><span class="import-hint">اضغط للاختيار من جهازك</span></label>
       <input id="mediaInput" type="file" accept="video/*,image/*,audio/*" multiple hidden>
       <div class="asset-list" id="assetList"><div class="empty-assets">مكتبتك فارغة حاليًا<br><small>ابدأ بإضافة ملفاتك</small></div></div>
+      <section id="templateBrowser" class="template-browser" hidden>
+        <div class="template-search"><input id="templateSearch" type="search" placeholder="ابحث عن قالب: زفاف، خطوبة، صور..."><select id="templateType"><option value="all">كل الأنواع</option><option value="video">قوالب فيديو</option><option value="photo">قوالب صور</option></select></div>
+        <div class="template-cats" id="templateCats"></div>
+        <div class="template-grid" id="templateGrid"></div>
+        <a class="flexclip-link" href="https://www.flexclip.com/templates/" target="_blank" rel="noopener">استكشف مكتبة FlexClip الرسمية ↗</a>
+        <p class="template-note">قوالبنا الأصلية قابلة للتطوير داخل المحرر. روابط FlexClip تفتح مكتبتهم الرسمية ولا تنسخ ملفاتهم.</p>
+      </section>
     </section>
 
     <section class="editor">
