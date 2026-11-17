@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111214">
+  <meta name="description" content="SEIF VIDEO STUDIO — محرر فيديو ومونتاج وإيديت إبداعي">
+  <title>SEIF VIDEO STUDIO</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark">S</span><span>SEIF <b>VIDEO STUDIO</b><small>EDIT • CREATE • INSPIRE</small></span></a>
+    <div class="top-actions">
+      <span class="save-state" id="saveState">● مشروع جديد</span>
+      <button class="btn ghost" id="undoBtn" title="تراجع">↶</button>
+      <button class="btn ghost" id="redoBtn" title="إعادة">↷</button>
+      <button class="btn gold" id="exportBtn">تصدير الفيديو</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="tools-panel">
+      <div class="panel-heading"><span>مساحة الإبداع</span><span class="tiny-dot"></span></div>
+      <button class="tool active" data-tool="media"><i>▧</i><span>الوسائط</span></button>
+      <button class="tool" data-tool="audio"><i>♫</i><span>الصوت</span></button>
+      <button class="tool" data-tool="text"><i>T</i><span>النصوص</span></button>
+      <button class="tool" data-tool="effects"><i>✧</i><span>المؤثرات</span></button>
+      <button class="tool" data-tool="filters"><i>◐</i><span>الفلاتر</span></button>
+      <button class="tool" data-tool="transitions"><i>◫</i><span>الانتقالات</span></button>
+      <button class="tool" data-tool="adjust"><i>☷</i><span>الألوان</span></button>
+      <button class="tool" data-tool="layers"><i>▤</i><span>الطبقات</span></button>
+      <div class="tool-note">أدوات المونتاج والإيديت في مكان واحد</div>
+    </aside>
+
+    <section class="asset-panel" id="assetPanel">
+      <div class="section-title"><div><h2 id="assetTitle">الوسائط</h2><p id="assetSubtitle">أضف الفيديوهات والصور إلى مشروعك</p></div><span class="count" id="mediaCount">0</span></div>
+      <label class="import-drop" for="mediaInput"><span class="upload-icon">＋</span><b>استيراد الوسائط</b><small>فيديو • صور • صوت</small><span class="import-hint">اضغط للاختيار من جهازك</span></label>
+      <input id="mediaInput" type="file" accept="video/*,image/*,audio/*" multiple hidden>
+      <div class="asset-list" id="assetList"><div class="empty-assets">مكتبتك فارغة حاليًا<br><small>ابدأ بإضافة ملفاتك</small></div></div>
+    </section>
+
+    <section class="editor">
+      <div class="preview-toolbar"><span>المعاينة</span><span class="preview-format">PREVIEW <i></i></span><button class="icon-btn" id="fullscreenBtn" title="ملء الشاشة">⛶</button></div>
+      <div class="preview-stage" id="previewStage">
+        <div class="preview-empty" id="previewEmpty"><div class="play-emblem">▶</div><b>مساحة المعاينة</b><span>استورد مقطعًا لبدء الإيديت</span></div>
+        <video id="previewVideo" playsinline></video>
+        <img id="previewImage" alt="معاينة الصورة">
+        <div class="preview-overlay" id="previewOverlay"></div>
+      </div>
+      <div class="transport">
+        <span class="timecode" id="timecode">00:00:00.000</span>
+        <div class="transport-controls"><button class="icon-btn" id="backBtn">↶</button><button class="play-btn" id="playBtn">▶</button><button class="icon-btn" id="forwardBtn">↷</button></div>
+        <span class="timecode" id="duration">00:00:00.000</span>
+      </div>
+      <div class="timeline-head"><div><b>الخط الزمني</b><span class="track-hint">مسارات متعددة للإيديت</span></div><div class="timeline-actions"><button class="mini-btn" id="zoomOut">−</button><span id="zoomValue">100%</span><button class="mini-btn" id="zoomIn">＋</button><button class="mini-btn" id="addTrack">＋ مسار</button></div></div>
+      <div class="timeline-wrap" id="timelineWrap">
+        <div class="ruler" id="ruler"><span>00:00</span><span>00:05</span><span>00:10</span><span>00:15</span><span>00:20</span><span>00:25</span></div>
+        <div class="tracks" id="tracks">
+          <div class="track"><div class="track-label">▣ <span>الفيديو</span></div><div class="track-lane" data-track="video"></div></div>
+          <div class="track"><div class="track-label">T <span>النصوص</span></div><div class="track-lane" data-track="text"></div></div>
+          <div class="track"><div class="track-label">♫ <span>الصوت</span></div><div class="track-lane" data-track="audio"></div></div>
+        </div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+      <div class="edit-toolbar">
+        <button class="edit-action" id="splitBtn"><b>✂</b><span>تقسيم</span></button>
+        <button class="edit-action" id="deleteBtn"><b>⌫</b><span>حذف</span></button>
+        <button class="edit-action" id="muteBtn"><b>♫</b><span>كتم الصوت</span></button>
+        <button class="edit-action" id="fitBtn"><b>▣</b><span>ملاءمة</span></button>
+        <button class="edit-action" id="addTextBtn"><b>T</b><span>إضافة نص</span></button>
+      </div>
+    </section>
+
+    <aside class="inspector">
+      <div class="section-title"><div><h2>خصائص المقطع</h2><p>تحكم دقيق في الإعدادات</p></div></div>
+      <div id="inspectorContent" class="inspector-content"><div class="inspector-empty"><span>✧</span><b>اختر مقطعًا</b><small>ستظهر هنا أدوات التعديل والخصائص</small></div></div>
+      <div class="project-settings"><h3>إعدادات المشروع</h3><label>نسبة العرض</label><select id="aspectSelect"><option value="16:9">16:9 — يوتيوب</option><option value="9:16">9:16 — ريلز / تيك توك</option><option value="1:1">1:1 — مربع</option><option value="4:5">4:5 — منشورات</option></select><label>معدل الإطارات</label><select id="fpsSelect"><option>30 FPS</option><option>24 FPS</option><option>60 FPS</option></select></div>
+    </aside>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
