@@ -53,7 +53,7 @@
     </section>
 
     <section class="editor">
-      <div class="preview-toolbar"><span>المعاينة</span><span class="preview-format">PREVIEW <i></i></span><button class="icon-btn" id="fullscreenBtn" title="ملء الشاشة">⛶</button></div>
+      <div class="preview-toolbar"><span>المعاينة</span><span class="preview-format">PREVIEW <i></i></span><button class="icon-btn" id="fullscreenBtn" title="ملء الشاشة">⛶</button><button class="icon-btn" id="focusBtn" title="وضع التركيز">◉</button></div>
       <div class="preview-stage" id="previewStage">
         <div class="preview-empty" id="previewEmpty"><div class="play-emblem">▶</div><b>مساحة المعاينة</b><span>استورد مقطعًا لبدء الإيديت</span></div>
         <video id="previewVideo" playsinline></video>
@@ -91,8 +91,9 @@
       <div class="project-settings"><h3>إعدادات المشروع</h3><label>نسبة العرض</label><select id="aspectSelect"><option value="16:9">16:9 — يوتيوب</option><option value="9:16">9:16 — ريلز / تيك توك</option><option value="1:1">1:1 — مربع</option><option value="4:5">4:5 — منشورات</option></select><label>معدل الإطارات</label><select id="fpsSelect"><option>30 FPS</option><option>24 FPS</option><option>60 FPS</option></select></div>
     </aside>
   </main>
-  <section id="exportDialog" class="export-dialog" hidden><div class="export-card"><button id="closeExportBtn" class="export-close" type="button">×</button><h2>تصدير الفيديو</h2><p>تصدير مجاني من المتصفح دون علامة مائية.</p><label for="exportQuality">دقة الفيديو</label><select id="exportQuality"><option value="1920x1080">Full HD — 1080p</option><option value="2560x1440">2K — 1440p</option><option value="3840x2160">4K — 2160p</option></select><label for="exportFps">معدل الإطارات</label><select id="exportFps"><option value="30">30 FPS</option><option value="24">24 FPS</option><option value="60">60 FPS</option></select><p class="export-warning">التصدير الحالي يرسم مقاطع الفيديو والصور من الخط الزمني إلى ملف WebM. الصوت والمؤثرات والنصوص المركبة ليست ضمن هذا الإصدار. دقة 4K تحتاج جهازًا قويًا وذاكرة كافية.</p><div class="export-progress" id="exportProgress" hidden><div id="exportProgressBar"></div></div><small id="exportStatus"></small><button id="startExportBtn" class="btn gold" type="button">ابدأ التصدير المجاني</button></div></section>
+  <section id="exportDialog" class="export-dialog" hidden><div class="export-card"><button id="closeExportBtn" class="export-close" type="button">×</button><h2>تصدير الفيديو</h2><p>تصدير مجاني من المتصفح دون علامة مائية.</p><label for="exportQuality">دقة الفيديو</label><select id="exportQuality"><option value="1920x1080">Full HD — 1080p</option><option value="2560x1440">2K — 1440p</option><option value="3840x2160">4K — 2160p</option></select><label for="exportFps">معدل الإطارات</label><select id="exportFps"><option value="30">30 FPS</option><option value="24">24 FPS</option><option value="60">60 FPS</option></select><p class="export-warning">التصدير الحالي يرسم مقاطع الفيديو والصور من الخط الزمني إلى ملف WebM. الصوت والمؤثرات والنصوص المركبة ليست ضمن هذا الإصدار. دقة 4K تحتاج جهازًا قويًا وذاكرة كافية.</p><div class="export-progress" id="exportProgress" hidden><div id="exportProgressBar"></div></div><small id="exportStatus"></small><button id="exportProjectBtn" class="mini-btn" type="button">تصدير نسخة المشروع</button><label class="mini-btn" for="importProjectInput">استيراد نسخة</label><input id="importProjectInput" type="file" accept="application/json" hidden><button id="startExportBtn" class="btn gold" type="button">ابدأ التصدير المجاني</button></div></section>
   <div class="toast" id="toast" role="status"></div>
   <script src="./app.js"></script>
+  <script src="./editor-enhancements.js"></script>
 </body>
 </html>
