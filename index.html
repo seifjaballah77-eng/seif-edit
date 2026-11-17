@@ -46,7 +46,7 @@
         <div class="template-search"><input id="templateSearch" type="search" placeholder="ابحث عن قالب: زفاف، خطوبة، صور..."><select id="templateType"><option value="all">كل الأنواع</option><option value="video">قوالب فيديو</option><option value="photo">قوالب صور</option></select></div>
         <div class="template-cats" id="templateCats"></div>
         <div class="template-grid" id="templateGrid"></div>
-        <a class="flexclip-link" href="https://www.flexclip.com/templates/" target="_blank" rel="noopener">استكشف مكتبة FlexClip الرسمية ↗</a>
+        <button class="flexclip-link flexclip-open" id="flexclipOpenBtn" type="button">فتح FlexClip داخل مساحة التطبيق ↗</button><div id="flexclipEmbed" class="flexclip-embed" hidden><div class="flexclip-embed-head"><b>FlexClip</b><button type="button" id="flexclipCloseBtn">إغلاق</button></div><iframe id="flexclipFrame" title="FlexClip" src="https://www.flexclip.com/templates/" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-read; clipboard-write; fullscreen"></iframe><p>إذا منع FlexClip العرض داخل إطار، استخدم زر الفتح الخارجي.</p><a href="https://www.flexclip.com/templates/" target="_blank" rel="noopener">فتح FlexClip في نافذة مستقلة ↗</a></div>
         <p class="template-note">قوالبنا الأصلية قابلة للتطوير داخل المحرر. روابط FlexClip تفتح مكتبتهم الرسمية ولا تنسخ ملفاتهم.</p>
       </section>
     <section id="projectHistory" class="project-history" hidden><div class="history-head"><b>سجل الأعمال السابقة</b><button id="newProjectBtn" class="mini-btn">＋ مشروع جديد</button></div><p class="history-help">مشاريعك محفوظة على هذا المتصفح مع ملفاتها المستوردة.</p><div id="projectList" class="project-list"></div></section>
@@ -90,6 +90,7 @@
       <div class="project-settings"><h3>إعدادات المشروع</h3><label>نسبة العرض</label><select id="aspectSelect"><option value="16:9">16:9 — يوتيوب</option><option value="9:16">9:16 — ريلز / تيك توك</option><option value="1:1">1:1 — مربع</option><option value="4:5">4:5 — منشورات</option></select><label>معدل الإطارات</label><select id="fpsSelect"><option>30 FPS</option><option>24 FPS</option><option>60 FPS</option></select></div>
     </aside>
   </main>
+  <section id="exportDialog" class="export-dialog" hidden><div class="export-card"><button id="closeExportBtn" class="export-close" type="button">×</button><h2>تصدير الفيديو</h2><p>تصدير مجاني من المتصفح دون علامة مائية.</p><label for="exportQuality">دقة الفيديو</label><select id="exportQuality"><option value="1920x1080">Full HD — 1080p</option><option value="2560x1440">2K — 1440p</option><option value="3840x2160">4K — 2160p</option></select><label for="exportFps">معدل الإطارات</label><select id="exportFps"><option value="30">30 FPS</option><option value="24">24 FPS</option><option value="60">60 FPS</option></select><p class="export-warning">التصدير الحالي يرسم مقاطع الفيديو والصور من الخط الزمني إلى ملف WebM. الصوت والمؤثرات والنصوص المركبة ليست ضمن هذا الإصدار. دقة 4K تحتاج جهازًا قويًا وذاكرة كافية.</p><div class="export-progress" id="exportProgress" hidden><div id="exportProgressBar"></div></div><small id="exportStatus"></small><button id="startExportBtn" class="btn gold" type="button">ابدأ التصدير المجاني</button></div></section>
   <div class="toast" id="toast" role="status"></div>
   <script src="./app.js"></script>
 </body>
