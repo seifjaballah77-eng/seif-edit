@@ -97,7 +97,53 @@ $('fullscreenBtn').onclick=()=>{$('previewStage').requestFullscreen?.()};
 $('zoomIn').onclick=()=>{state.zoom=Math.min(4,state.zoom+.2);renderClips()};$('zoomOut').onclick=()=>{state.zoom=Math.max(.4,state.zoom-.2);renderClips()};
 $('addTrack').onclick=()=>{state.extraTracks++;const row=document.createElement('div');row.className='track';row.innerHTML='<div class="track-label">＋ <span>مسار '+state.extraTracks+'</span></div><div class="track-lane" data-track="extra'+state.extraTracks+'"></div>';$('tracks').append(row);scheduleSave();toast('تمت إضافة مسار جديد')};
 $('addTextBtn').onclick=()=>toast('أداة النصوص المتحركة ضمن المرحلة التالية');
-$('exportBtn').onclick=()=>toast('التصدير النهائي قيد البناء — لن نعرض تصديرًا وهميًا');
+$('exportBtn').onclick=()=>{if(!state.clips.length){toast('أضف مقطع فيديو أو صورة أولًا');return}$('exportDialog').hidden=false};
+$('closeExportBtn').onclick=()=>{$('exportDialog').hidden=true};
+$('flexclipOpenBtn').onclick=()=>{$('flexclipEmbed').hidden=false;$('flexclipFrame').src='https://www.flexclip.com/templates/'};
+$('flexclipCloseBtn').onclick=()=>{$('flexclipEmbed').hidden=true};
+async function exportTimeline(){
+ const button=$('startExportBtn'),status=$('exportStatus'),progress=$('exportProgress'),bar=$('exportProgressBar');
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('التصدير غير مدعوم في هذا المتصفح. جرّب متصفحًا أحدث.');return}
+ const [w,h]=$('exportQuality').value.split('x').map(Number),fps=+$('exportFps').value;
+ const clips=state.clips.filter(c=>{const a=state.assets.find(x=>x.id===c.assetId);return a&&(a.kind==='video'||a.kind==='image')}).slice().sort((a,b)=>a.offset-b.offset);
+ if(!clips.length){toast('لا توجد مقاطع فيديو أو صور قابلة للتصدير');return}
+ const end=Math.max(...clips.map(c=>c.offset+c.duration));if(!Number.isFinite(end)||end<=0){toast('مدة المشروع غير صالحة');return}
+ button.disabled=true;progress.hidden=false;bar.style.width='0%';status.textContent='جارٍ تجهيز الوسائط...';
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');
+ const stream=canvas.captureStream(fps);let recorder;
+ try{
+  const media=[];
+  for(const c of clips){const a=state.assets.find(x=>x.id===c.assetId);if(a.kind==='image'){const im=new Image();im.src=a.url;await new Promise((res,rej)=>{im.onload=res;im.onerror=rej});media.push({c,a,el:im})}else{const v=document.createElement('video');v.src=a.url;v.muted=true;v.playsInline=true;v.preload='auto';await new Promise((res,rej)=>{v.onloadedmetadata=res;v.onerror=rej});media.push({c,a,el:v})}}
+  const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(x=>MediaRecorder.isTypeSupported(x))||'';
+  recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);const chunks=[];
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const done=new Promise((resolve,reject)=>{recorder.onstop=resolve;recorder.onerror=()=>reject(new Error('تعذّر تسجيل الفيديو'))});
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);recorder.start(500);
+  let started=performance.now(),last=0,activeVideo=null;
+  async function frame(){
+   const elapsed=(performance.now()-started)/1000, t=Math.min(end,elapsed);
+   ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+   const active=media.filter(m=>t>=m.c.offset&&t<m.c.offset+m.c.duration);
+   if(active.length){const m=active[active.length-1],el=m.el;
+    if(m.a.kind==='video'){
+     if(activeVideo!==el){if(activeVideo)activeVideo.pause();activeVideo=el;try{await el.play()}catch(e){}}
+     const target=(m.c.start||0)+(t-m.c.offset);if(Math.abs(el.currentTime-target)>.35){try{el.currentTime=Math.min(target,Math.max(0,(el.duration||target)-.05))}catch(e){}}
+    }
+    const ew=el.videoWidth||el.naturalWidth||w,eh=el.videoHeight||el.naturalHeight||h,scale=Math.min(w/ew,h/eh),dw=ew*scale,dh=eh*scale;
+    try{ctx.drawImage(el,(w-dw)/2,(h-dh)/2,dw,dh)}catch(e){}
+   }
+   if(t-last>=.5){last=t;bar.style.width=Math.round(t/end*100)+'%';status.textContent='جارٍ التصدير: '+Math.round(t/end*100)+'%'}
+   if(t>=end){if(activeVideo)activeVideo.pause();recorder.stop();return}
+   requestAnimationFrame(frame)
+  }
+  await frame();await done;
+  const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='SEIF-VIDEO-STUDIO-'+w+'x'+h+'.webm';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  status.textContent='اكتمل التصدير — تم تنزيل ملف WebM';bar.style.width='100%';toast('تم تنزيل الفيديو بنجاح');
+ }catch(err){status.textContent='فشل التصدير: '+(err.message||'خطأ غير معروف');toast('تعذّر التصدير. جرّب دقة أقل أو متصفحًا أحدث')}
+ finally{stream.getTracks().forEach(t=>t.stop());button.disabled=false}
+}
+$('startExportBtn').onclick=exportTimeline;
 $('undoBtn').onclick=()=>{if(!state.history.length){toast('لا توجد خطوات للتراجع');return}state.future.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.history.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected);};
 $('redoBtn').onclick=()=>{if(!state.future.length){toast('لا توجد خطوات للإعادة');return}state.history.push(JSON.stringify({clips:state.clips,selected:state.selected}));const s=JSON.parse(state.future.pop());state.clips=s.clips;state.selected=s.selected;renderClips();selectClip(state.selected)};
 $('saveProjectBtn').onclick=()=>saveProject(true);$('newProjectBtn').onclick=startNewProject;
